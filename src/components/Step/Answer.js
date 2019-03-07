@@ -13,6 +13,7 @@ export default function Answer(props) {
 };
 
 Answer.propTypes = {
+    answer: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     onAnswer: PropTypes.func,
 };

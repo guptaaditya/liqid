@@ -13,15 +13,15 @@ class Step extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            answer: ''
+            answer: props.answer || ""
         };
         this.onAnswer = this.onAnswer.bind(this);
-        this.onNext = this.onNext.bind(this);
+        this.onNavigate = this.onNavigate.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.qAnswered !== nextProps.qAnswered) {
-            this.setState({answer: ''});
+        if (this.props.answer !== nextProps.answer) {
+            this.setState({answer: nextProps.answer});
         }
     }
 
@@ -31,9 +31,12 @@ class Step extends React.Component {
         });
     }
 
-    onNext() {
+    onNavigate(direction) {
         if (this.state.answer) {
-            this.props.saveAnswer(this.state.answer, this.props.qAnswered);
+            if (direction === "next")
+                this.props.saveAnswer(this.state.answer, this.props.qAnswered);
+            else
+                this.props.navigateToPreviousQuestion();
         } else {
             window.alert("Please answer the question");
         }
@@ -44,8 +47,8 @@ class Step extends React.Component {
             <Container>
                 <ProgressBar progress={this.props.progress} />
                 <Question statement={this.props.statement} />
-                <Answer type={this.props.type} onAnswer={this.onAnswer} answer={this.state.answer}/>
-                <Navigator onBack={this.props.navigateToPreviousQuestion} onNext={this.onNext} />
+                <Answer type={this.props.type} onAnswer={this.onAnswer} answer={this.state.answer} />
+                <Navigator onBack={e => this.onNavigate("back")} onNext={e => this.onNavigate("next")} />
             </Container>
         );
     }
@@ -63,6 +66,7 @@ export default connect(state => {
 })(Step);
 
 Step.propTypes = {
+    answer: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     statement: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
 };

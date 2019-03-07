@@ -1,15 +1,15 @@
 export function saveAnswer(answer, questionId) {
-    dispatch({
+    return {
         type: "SAVE_ANSWER",
         payload: {
             answer,
             questionId
         }
-    });
+    };
 }
 
 export function navigateToPreviousQuestion() {
-    dispatch({
+    return {
         type: "NAVIGATE_BACK"
-    });
+    };
 }

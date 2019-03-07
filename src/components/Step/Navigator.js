@@ -1,25 +1,28 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { connect } from "redux";
+import { connect } from "react-redux";
 
 function Navigator(props) {
     const flexContainer = {
+        marginTop: "20px",
         borderTop: "1px solid", 
-        paddingTope: "20px", 
-        display: "flex", 
-        flex: 1, 
-        justifyContent: "space-between",
+        paddingTop: "20px", 
     };
     return (
         <div style={flexContainer}>
-            <button onClick={props.onBack}>Back</button>
-            <button onClick={props.onNext}>Next</button>
+            {!props.firstQuestion && <button style={{float: "left"}} onClick={props.onBack}>Back</button>}
+            {!props.lastQuestion && <button style={{float: "right"}} onClick={props.onNext}>Next</button>}
         </div>
     );
 };
 
-const mapStateToProps = (state) => {
-    return { lastQuestionIndex: state.questions.length - 1 };
+const mapStateToProps = state => {
+    let firstQuestion = state.currentQuestionIndex === 0 ? true : false;
+    let secondQuestion = state.currentQuestionIndex === (state.questions.length - 1) ? true : false;
+    return { 
+        firstQuestion,
+        secondQuestion
+    };
 };
 export default connect(mapStateToProps)(Navigator);
 

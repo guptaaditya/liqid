@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 export default function Question(props) {
     return (
-        <div>Question: {props.statement}</div>
+        <div style={{marginTop: "20px"}}>Question: {props.statement}</div>
     );
 }
 

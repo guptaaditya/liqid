@@ -1,7 +1,7 @@
-import { createStore } from 'redux';
+import { createStore, compose, applyMiddleware } from 'redux';
 import reducer from "../reducers/";
 
-export default function storeConfigurer(initState){
+export default function storeConfigurer(initState) {
   return createStore(
     reducer,
     initState,

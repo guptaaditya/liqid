@@ -14,5 +14,10 @@ const questions = [
         type: "text",
         statement: "Which technical blogs do you follow? Name some of them.",
     },
+    {
+        id: 4,
+        type: "radio",
+        statement: "Select your gender?",
+    }
 ];
 export default questions;

@@ -1,14 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import RoutesList from './routes/'
-import storeConfigurer from './store/'
+import storeConfigurer from './store/';
 import * as serviceWorker from './serviceWorker';
-const store = storeConfigurer()
-
+import { loadState, saveState} from './utils';
+import App from './App';
+const preState = loadState();
+let store;
+if (preState) {
+  store = storeConfigurer(preState);
+} else {
+  store = storeConfigurer();
+}
+store.subscribe(() => saveState(store.getState()));
 ReactDOM.render(
     <Provider store={store}>
-      <RoutesList />
+      <App />
     </Provider>, document.getElementById('root')
 );
 

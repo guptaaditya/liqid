@@ -9,14 +9,20 @@ import Navigator from "./Navigator";
 import ProgressBar from "../ProgressBar";
 import Container from "../Container";
 
-class Step extends React.PureComponent {
+class Step extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            answer: null
+            answer: ''
         };
         this.onAnswer = this.onAnswer.bind(this);
         this.onNext = this.onNext.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.qAnswered !== nextProps.qAnswered) {
+            this.setState({answer: ''});
+        }
     }
 
     onAnswer(e) {
@@ -38,14 +44,14 @@ class Step extends React.PureComponent {
             <Container>
                 <ProgressBar progress={this.props.progress} />
                 <Question statement={this.props.statement} />
-                <Answer type={this.props.type} onAnswer={this.onAnswer} />
+                <Answer type={this.props.type} onAnswer={this.onAnswer} answer={this.state.answer}/>
                 <Navigator onBack={this.props.navigateToPreviousQuestion} onNext={this.onNext} />
             </Container>
         );
     }
 }
 export default connect(state => {
-    const qAnswered = state.lastAnsweredQuestionIndex;
+    const qAnswered = state.currentQuestionIndex;
     const progress = qAnswered ? (qAnswered)*100/state.questions.length : 2;
     return {
         qAnswered,

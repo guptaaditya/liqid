@@ -5,7 +5,7 @@ export default function Answer(props) {
     if (props.type === "text") {
         return (
             <div style={{marginTop: "20px"}}>
-                <input type="text" onChange={props.onAnswer} style={{width: "100%"}} placeholder="Please write you answer here" />
+                <input type="text" value={props.answer} onChange={(e) => props.onAnswer(e, props.type)} style={{width: "100%"}} placeholder="Please write you answer here" />
             </div>
         );
     }

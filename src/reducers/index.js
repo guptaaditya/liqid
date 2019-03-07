@@ -11,8 +11,8 @@ export default function reducer(state = initialState, action) {
         case "SAVE_ANSWER":
             let questions = [...state.questions];
             let lastAnsweredQuestionIndex;
-            const question = questions.find((q, index) => {
-                if (q.id === action.payload.questionId) {
+            let question = questions.find((q, index) => {
+                if (index === action.payload.questionId) {
                     lastAnsweredQuestionIndex = index;
                     return true;
                 }
@@ -23,7 +23,7 @@ export default function reducer(state = initialState, action) {
                 ...state,
                 questions,
                 lastAnsweredQuestionIndex,
-                currentQuestionIndex: lastAnsweredQuestionIndex,
+                currentQuestionIndex: lastAnsweredQuestionIndex + 1,
             };
         case "NAVIGATE_BACK":
             return {

@@ -18,6 +18,10 @@ const questions = [
         id: 4,
         type: "radio",
         statement: "Select your gender?",
+        options: [
+            {text: "Male", value: 1},
+            {text: "Female", value: 2},
+        ],
     }
 ];
 export default questions;

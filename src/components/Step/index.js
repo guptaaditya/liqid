@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-
 import { saveAnswer, navigateToPreviousQuestion } from "../../actions/";
 import Question from "./Question";
 import Answer from "./Answer";
@@ -19,12 +18,6 @@ class Step extends React.Component {
         this.onNavigate = this.onNavigate.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (this.props.answer !== nextProps.answer) {
-            this.setState({answer: nextProps.answer});
-        }
-    }
-
     onAnswer(e) {
         this.setState({ 
             answer:  e.target.value
@@ -32,14 +25,17 @@ class Step extends React.Component {
     }
 
     onNavigate(direction) {
-        if (this.state.answer) {
-            if (direction === "next")
+        if (direction === "next") {
+            if (this.state.answer) {
                 this.props.saveAnswer(this.state.answer, this.props.qAnswered);
-            else
-                this.props.navigateToPreviousQuestion();
-        } else {
-            window.alert("Please answer the question");
+                this.setState({ answer: "" });
+            } else {
+                window.alert("Please answer the question");
+                return;
+            }
         }
+        else
+            this.props.navigateToPreviousQuestion();
     }
 
     render() {
@@ -47,7 +43,13 @@ class Step extends React.Component {
             <Container>
                 <ProgressBar progress={this.props.progress} />
                 <Question statement={this.props.statement} />
-                <Answer type={this.props.type} onAnswer={this.onAnswer} answer={this.state.answer} />
+                <Answer 
+                    name={`questionid-${this.props.qAnswered}`} 
+                    type={this.props.type} 
+                    onAnswer={this.onAnswer} 
+                    answer={this.state.answer}
+                    options={this.props.answerOptions} 
+                />
                 <Navigator onBack={e => this.onNavigate("back")} onNext={e => this.onNavigate("next")} />
             </Container>
         );
@@ -56,9 +58,11 @@ class Step extends React.Component {
 export default connect(state => {
     const qAnswered = state.currentQuestionIndex;
     const progress = qAnswered ? (qAnswered)*100/state.questions.length : 2;
+    let lastQuestion = state.currentQuestionIndex === (state.questions.length - 1) ? true : false;
     return {
         qAnswered,
         progress,
+        lastQuestion,
     };
 }, {
     saveAnswer,
@@ -69,4 +73,5 @@ Step.propTypes = {
     answer: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     statement: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
+    answerOptions:PropTypes.arrayOf(PropTypes.object),
 };

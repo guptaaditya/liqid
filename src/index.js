@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import storeConfigurer from './store/';
 import * as serviceWorker from './serviceWorker';
 import { loadState, saveState} from './utils';
-import App from './App';
+import RoutesList from './routes/';
 const preState = loadState();
 let store;
 if (preState) {
@@ -15,7 +15,7 @@ if (preState) {
 store.subscribe(() => saveState(store.getState()));
 ReactDOM.render(
     <Provider store={store}>
-      <App />
+      <RoutesList />
     </Provider>, document.getElementById('root')
 );
 

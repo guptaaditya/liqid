@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { withRouter } from "react-router";
 import { saveAnswer, navigateToPreviousQuestion } from "../../actions/";
 import Question from "./Question";
 import Answer from "./Answer";
@@ -12,62 +13,78 @@ class Step extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            answer: props.answer || ""
+            answer: props.answer || "",
         };
         this.onAnswer = this.onAnswer.bind(this);
         this.onNavigate = this.onNavigate.bind(this);
     }
 
+    componentWillReceiveProps(nextProps) {
+        if(this.props.answer !== nextProps.answer) {
+            this.setState({ answer: nextProps.answer });
+        }
+    }
+
     onAnswer(e) {
         this.setState({ 
-            answer:  e.target.value
+            answer:  e.target.value,
         });
     }
 
     onNavigate(direction) {
         if (direction === "next") {
             if (this.state.answer) {
-                this.props.saveAnswer(this.state.answer, this.props.qAnswered);
-                this.setState({ answer: "" });
+                const qAnswered = Number(this.props.match.params.questionIndex);
+                const lastQuestion = qAnswered === (this.props.totalQuestions - 1) ? true : false;
+                this.props.saveAnswer(this.state.answer, qAnswered);
+                this.setState({ answer: "" }); 
+                let historyString   =   lastQuestion ? "/summary" : "/"+ (qAnswered + 1); 
+                this.props.history.push(historyString);
             } else {
                 window.alert("Please answer the question");
                 return;
             }
         }
-        else
+        else{
             this.props.navigateToPreviousQuestion();
+            this.props.history.goBack();
+        }
     }
 
     render() {
+        const qAnswered = Number(this.props.match.params.questionIndex);
+        const firstQuestion = qAnswered === 0 ? true : false;
+        const lastQuestion = qAnswered === (this.props.totalQuestions - 1) ? true : false;
+        const progress = qAnswered ? qAnswered * 100/this.props.totalQuestions : 2;
         return (
             <Container>
-                <ProgressBar progress={this.props.progress} />
+                <ProgressBar progress={progress} />
                 <Question statement={this.props.statement} />
                 <Answer 
-                    name={`questionid-${this.props.qAnswered}`} 
+                    name={`questionid-${qAnswered}`} 
                     type={this.props.type} 
                     onAnswer={this.onAnswer} 
                     answer={this.state.answer}
                     options={this.props.answerOptions} 
                 />
-                <Navigator onBack={e => this.onNavigate("back")} onNext={e => this.onNavigate("next")} />
+                <Navigator 
+                    onBack={() => this.onNavigate("back")} 
+                    onNext={() => this.onNavigate("next")} 
+                    firstQuestion={firstQuestion}
+                    lastQuestion={lastQuestion}
+                />
             </Container>
         );
     }
 }
 export default connect(state => {
-    const qAnswered = state.currentQuestionIndex;
-    const progress = qAnswered ? (qAnswered)*100/state.questions.length : 2;
-    let lastQuestion = state.currentQuestionIndex === (state.questions.length - 1) ? true : false;
     return {
-        qAnswered,
-        progress,
-        lastQuestion,
+        totalQuestions: state.questions.length,
     };
 }, {
     saveAnswer,
     navigateToPreviousQuestion,
-})(Step);
+})(withRouter(Step));
 
 Step.propTypes = {
     answer: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
